@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Budget report</title>
+        <title>Budget forecast</title>
         
         <link
             href="{{ STATIC_URL }}/screen.css"
@@ -10,7 +10,7 @@
     </head>
     
     <body>
-        <h1>Forecast</h1>
+        <h1>Budget forecast</h1>
         
         <p>Start balance: {{ start_balance }}</p>
         
@@ -30,7 +30,14 @@
             
             <tbody>
                 <tr>
-                    <th>Category</th>
+                    <th>
+                        <a
+                            href="{% url admin:budgets_category_changelist %}"
+                        >
+                            Categories
+                        </a>
+                    </th>
+                    
                     <td colspan="12"></td>
                 </tr>
                 
