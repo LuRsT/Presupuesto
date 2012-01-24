@@ -1,0 +1,33 @@
+table {
+    font-size: 10pt;
+    border-collapse: collapse;
+    }
+
+th {
+    padding: 0 0.5em;
+    }
+
+th {
+    text-align: center;
+    }
+
+td {
+    text-align: right;
+    min-width: 6em;
+    }
+
+table {
+    border: 1px solid black;
+    }
+thead tr:last-child > * {
+    border-bottom: 1px solid black;
+    }
+tbody tr:first-child > *, tfoot tr:first-child > *, #transactions > * {
+    border-top: 1px solid black;
+    }
+tbody th, tfoot th {
+    border-right: 1px solid black;
+    }
+tfoot th {
+    text-align: right;
+    }

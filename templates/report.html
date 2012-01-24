@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>Budget report</title>
+        
+        <link
+            href="{{ STATIC_URL }}/screen.css"
+            type="text/css"
+            rel="stylesheet"
+            />
+    </head>
+    
+    <body>
+        <h1>Forecast</h1>
+        
+        <p>Start balance: {{ start_balance }}</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2"></th>
+                    <th colspan="12">Month</th>
+                </tr>
+                
+                <tr>
+                    {% for month in months %}
+                        <th>{{ month }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            
+            <tbody>
+                <tr>
+                    <th>Category</th>
+                    <td colspan="12"></td>
+                </tr>
+                
+                {% for category, category_amounts in amount_by_category.items %}
+                    <tr>
+                        <th style="text-align: left;">
+                            <a
+                                href="{% url admin:budgets_category_change category.pk %}"
+                            >
+                                {{ category.description }}
+                            </a>
+                        </th>
+                        
+                        {% for amount in category_amounts %}
+                            <td>{{ amount }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                
+                <tr id="transactions">
+                    <th>
+                        <a
+                            href="{% url admin:transactions_futuretransaction_changelist %}"
+                        >
+                            Transactions
+                        </a>
+                    </th>
+                    
+                    {% for amount in transaction_amount_by_month %}
+                        <td>
+                            <a href="{% url admin:transactions_futuretransaction_changelist %}?date__month={{ forloop.counter }}">
+                                {{ amount }}
+                            </a>
+                        </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+            
+            <tfoot>
+                <tr>
+                    <th>Variation</th>
+                    {% for variation in variation_by_month %}
+                        <td>{{ variation }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th>Balance before income</th>
+                    {% for balance in balance_before_income_by_month %}
+                        <td>{{ balance }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th>Final balance</th>
+                    {% for balance in balance_by_month %}
+                        <td>{{ balance }}</td>
+                    {% endfor %}
+                </tr>
+            </tfoot>
+        </table>
+    </body>
+</html>
