@@ -13,6 +13,11 @@ Once you have a Python virtualenv, run::
     pip install .
     manage syncdb    # Create the user account you'll use later on!
 
+Now store your start balance in a file at the root of the branch; e.g.::
+
+    echo "1234.56" > BALANCE.txt
+
+This balance must be the final one at the end of the previous month.
 
 Use
 ---
