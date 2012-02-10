@@ -5,7 +5,9 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
 from presupuesto.budgets.models import Category
-from presupuesto.transactions.models import get_future_transaction_amounts_by_month
+from presupuesto.transactions.models import get_future_transaction_amounts_by_month,\
+    FutureTransaction
+from presupuesto.utils import reorder_iterable
 
 
 MONTH_LABELS = (
@@ -27,14 +29,16 @@ MONTH_LABELS = (
 def home(request):
     start_balance = float(open("BALANCE.txt").read())
     
-    today = datetime.today()
-    current_month = today.month - 1
+    current_month = datetime.today().month - 1
     
-    amount_by_category = _get_amount_by_category()
-    transaction_amount_by_month = _reorder_iterable(get_future_transaction_amounts_by_month(), current_month)
+    amount_by_category = _get_amount_by_category(current_month)
     
-    amounts_by_month = zip(
-        transaction_amount_by_month, *_reorder_columns_in_rows(amount_by_category.values(), current_month))
+    transaction_amount_by_month = get_future_transaction_amounts_by_month(
+        current_month)
+    
+    amounts_by_month = amount_by_category.values() + \
+        [transaction_amount_by_month.values()]
+    amounts_by_month = zip(*amounts_by_month)
     
     variation_by_month = map(sum, amounts_by_month)
     
@@ -55,7 +59,11 @@ def home(request):
         
         last_month_balance = month_balance
     
-    months = _reorder_iterable(MONTH_LABELS, current_month)
+    months = reorder_iterable(MONTH_LABELS, current_month)
+    
+    unsheduled_transactions = FutureTransaction.objects \
+        .filter(date__isnull=True) \
+        .order_by("priority", "-amount")
     
     context = {
         'start_balance': start_balance,
@@ -65,27 +73,15 @@ def home(request):
         'variation_by_month': variation_by_month,
         'balance_by_month': balance_by_month,
         'balance_before_income_by_month': balance_before_income_by_month,
+        'unsheduled_transactions': unsheduled_transactions,
         }
     return render_to_response("report.html", RequestContext(request, context))
 
 
-def _reorder_iterable(iterable, new_start):
-    first_half = iterable[:new_start]
-    last_half = iterable[new_start:]
-    return last_half + first_half
-
-
-def _reorder_columns_in_rows(rows, new_start_column):
-    reordered_rows = []
-    for row in rows:
-        reordered_rows.append(_reorder_iterable(row, new_start_column))
-    
-    return reordered_rows
-
-
-def _get_amount_by_category():
+def _get_amount_by_category(initial_month):
     amount_by_category = OrderedDict()
     for category in Category.objects.order_by("default_amount"):
-        amount_by_category[category] = category.get_amounts_by_month()
+        amount_by_category[category] = reorder_iterable(
+            category.get_amounts_by_month(), initial_month)
     
     return amount_by_category

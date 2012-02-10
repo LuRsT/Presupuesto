@@ -31,3 +31,15 @@ tbody th, tfoot th {
 tfoot th {
     text-align: right;
     }
+
+
+/* Unscheduled transactions */
+
+table#unscheduled_transactions td.description {
+    padding: 0 0.5em;
+    text-align: left;
+    }
+
+table#unscheduled_transactions td {
+    border-right: 1px solid black;
+    }
