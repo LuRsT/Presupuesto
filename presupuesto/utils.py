@@ -5,10 +5,11 @@ __all__ = ['get_balance', 'reorder_iterable']
 
 
 def get_balance():
-    balance_file_path = environ.get("PRESUPUESTO_BALANCE_FILE", "BALANCE.txt")
-    
-    with open(balance_file_path) as balance_file:
-        balance_raw = balance_file.read()
+    if "PRESUPUESTO_BALANCE" in environ:
+        balance_raw = environ['PRESUPUESTO_BALANCE']
+    else:
+        with open("BALANCE.txt") as balance_file:
+            balance_raw = balance_file.read()
     
     balance = float(balance_raw)
     return balance
