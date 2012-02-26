@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from datetime import datetime
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
@@ -26,6 +27,7 @@ MONTH_LABELS = (
     )
 
 
+@login_required
 def home(request):
     start_balance = get_balance()
     
