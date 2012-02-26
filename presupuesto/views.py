@@ -7,7 +7,7 @@ from django.template.context import RequestContext
 from presupuesto.budgets.models import Category
 from presupuesto.transactions.models import get_future_transaction_amounts_by_month,\
     FutureTransaction
-from presupuesto.utils import reorder_iterable
+from presupuesto.utils import get_balance, reorder_iterable
 
 
 MONTH_LABELS = (
@@ -27,7 +27,7 @@ MONTH_LABELS = (
 
 
 def home(request):
-    start_balance = float(open("BALANCE.txt").read())
+    start_balance = get_balance()
     
     current_month = datetime.today().month - 1
     
