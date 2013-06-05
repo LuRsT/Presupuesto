@@ -1,106 +1,134 @@
 <html>
     <head>
         <title>Budget forecast</title>
-        <link href="{{ STATIC_URL }}/screen.css" type="text/css" rel="stylesheet" />
+        <link href="{{ STATIC_URL }}/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+
+        <script src="{{ STATIC_URL }}/js/bootstrap.min.js"></script>
+
+        <style>
+            body {
+                padding-top: 40px;
+            }
+        </style>
     </head>
     <body>
-        <h1>Budget forecast</h1>
-        <p>Start balance: {{ start_balance }}</p>
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2"></th>
-                    <th colspan="12">Month</th>
-                </tr>
-                <tr>
-                    {% for month in months %}
-                        <th>{{ month }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>
-                        <a href="{% url admin:budgets_category_changelist %}" >
-                            Categories
-                        </a>
-                    </th>
-                    <td colspan="12"></td>
-                </tr>
-                {% for category, category_amounts in amount_by_category.items %}
+        <div class="container">
+            <div class="navbar navbar-inverse navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <a class="brand" href="#">Presupuesto</a>
+                        <ul class="nav">
+                            <li>
+                                <a href="{% url admin:budgets_category_add %}">Add category</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h1>Budget forecast</h1>
+            <p>Start balance: <span class="label label-info">{{ start_balance }}</span></p>
+
+            <table class="table">
+                <thead>
                     <tr>
-                        <th style="text-align: left;">
-                            <a href="{% url admin:budgets_category_change category.pk %}" >
-                                {{ category.description }}
-                            </a>
-                        </th>
-                        {% for amount in category_amounts %}
-                            <td>{{ amount }}</td>
+                        <th rowspan="2"></th>
+                        <th colspan="12">Month</th>
+                    </tr>
+                    <tr>
+                        {% for month in months %}
+                            <th>{{ month }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-                <tr id="transactions">
-                    <th>
-                        <a href="{% url admin:transactions_futuretransaction_changelist %}" >
-                            Transactions
-                        </a>
-                    </th>
-                    {% for month_number, amount in transaction_amount_by_month.items %}
-                        <td>
-                            <a href="{% url admin:transactions_futuretransaction_changelist %}?date__month={{ month_number }}">
-                                {{ amount }}
+                </thead>
+                <tbody>
+                    {% if amount_by_category.items %}
+                        <tr>
+                            <th>
+                                <a href="{% url admin:budgets_category_changelist %}" >
+                                    Categories
+                                </a>
+                            </th>
+                            <td colspan="12"></td>
+                        </tr>
+                        {% for category, category_amounts in amount_by_category.items %}
+                            <tr>
+                                <th style="text-align: left;">
+                                    <a href="{% url admin:budgets_category_change category.pk %}" >
+                                        {{ category.description }}
+                                    </a>
+                                </th>
+                                {% for amount in category_amounts %}
+                                    <td>{{ amount }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    <tr id="transactions">
+                        <th>
+                            <a href="{% url admin:transactions_futuretransaction_changelist %}" >
+                                Transactions
                             </a>
-                        </td>
-                    {% endfor %}
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Balance before income</th>
-                    {% for balance in balance_before_income_by_month %}
-                        <td>{{ balance }}</td>
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th>Final balance</th>
-                    {% for balance in balance_by_month %}
-                        <td>{{ balance }}</td>
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th>Variation (income - outcome)</th>
-                    {% for variation in variation_by_month %}
-                        <td>{{ variation }}</td>
-                    {% endfor %}
-                </tr>
-            </tfoot>
-        </table>
-
-        <h2>Unscheduled transactions</h2>
-
-        <table id="unscheduled_transactions">
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th>Priority</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for unsheduled_transaction in unsheduled_transactions %}
-                    <tr>
-                       <td class="description">
-                           <a
-                               href="{% url admin:transactions_futuretransaction_change unsheduled_transaction.pk %}"
-                           >
-                               {{ unsheduled_transaction.description }}
-                           </a>
-                       </td>
-                       <td>{{ unsheduled_transaction.priority }}</td>
-                       <td>{{ unsheduled_transaction.amount }}</td>
+                        </th>
+                        {% for month_number, amount in transaction_amount_by_month.items %}
+                            <td>
+                                <a href="{% url admin:transactions_futuretransaction_changelist %}?date__month={{ month_number }}">
+                                    {{ amount }}
+                                </a>
+                            </td>
+                        {% endfor %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Balance before income</th>
+                        {% for balance in balance_before_income_by_month %}
+                            <td>{{ balance }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th>Final balance</th>
+                        {% for balance in balance_by_month %}
+                            <td>{{ balance }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th>Variation (income - outcome)</th>
+                        {% for variation in variation_by_month %}
+                            <td>{{ variation }}</td>
+                        {% endfor %}
+                    </tr>
+                </tfoot>
+            </table>
+
+            {% if unsheduled_transactions %}
+                <h2>Unscheduled transactions</h2>
+
+                <table id="unscheduled_transactions" class="table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Priority</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unsheduled_transaction in unsheduled_transactions %}
+                            <tr>
+                            <td class="description">
+                                <a
+                                    href="{% url admin:transactions_futuretransaction_change unsheduled_transaction.pk %}"
+                                >
+                                    {{ unsheduled_transaction.description }}
+                                </a>
+                            </td>
+                            <td>{{ unsheduled_transaction.priority }}</td>
+                            <td>{{ unsheduled_transaction.amount }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
     </body>
 </html>
