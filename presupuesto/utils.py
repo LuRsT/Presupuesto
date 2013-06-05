@@ -8,9 +8,12 @@ def get_balance():
     if "PRESUPUESTO_BALANCE" in environ:
         balance_raw = environ['PRESUPUESTO_BALANCE']
     else:
-        with open("BALANCE.txt") as balance_file:
-            balance_raw = balance_file.read()
-    
+        try:
+            with open("BALANCE.txt") as balance_file:
+                balance_raw = balance_file.read()
+        except:
+            return float(0)
+
     balance = float(balance_raw)
     return balance
 
