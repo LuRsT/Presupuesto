@@ -1,71 +1,50 @@
 <html>
     <head>
         <title>Budget forecast</title>
-        
-        <link
-            href="{{ STATIC_URL }}/screen.css"
-            type="text/css"
-            rel="stylesheet"
-            />
+        <link href="{{ STATIC_URL }}/screen.css" type="text/css" rel="stylesheet" />
     </head>
-    
     <body>
         <h1>Budget forecast</h1>
-        
         <p>Start balance: {{ start_balance }}</p>
-        
         <table>
             <thead>
                 <tr>
                     <th rowspan="2"></th>
                     <th colspan="12">Month</th>
                 </tr>
-                
                 <tr>
                     {% for month in months %}
                         <th>{{ month }}</th>
                     {% endfor %}
                 </tr>
             </thead>
-            
             <tbody>
                 <tr>
                     <th>
-                        <a
-                            href="{% url admin:budgets_category_changelist %}"
-                        >
+                        <a href="{% url admin:budgets_category_changelist %}" >
                             Categories
                         </a>
                     </th>
-                    
                     <td colspan="12"></td>
                 </tr>
-                
                 {% for category, category_amounts in amount_by_category.items %}
                     <tr>
                         <th style="text-align: left;">
-                            <a
-                                href="{% url admin:budgets_category_change category.pk %}"
-                            >
+                            <a href="{% url admin:budgets_category_change category.pk %}" >
                                 {{ category.description }}
                             </a>
                         </th>
-                        
                         {% for amount in category_amounts %}
                             <td>{{ amount }}</td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
-                
                 <tr id="transactions">
                     <th>
-                        <a
-                            href="{% url admin:transactions_futuretransaction_changelist %}"
-                        >
+                        <a href="{% url admin:transactions_futuretransaction_changelist %}" >
                             Transactions
                         </a>
                     </th>
-                    
                     {% for month_number, amount in transaction_amount_by_month.items %}
                         <td>
                             <a href="{% url admin:transactions_futuretransaction_changelist %}?date__month={{ month_number }}">
@@ -75,7 +54,6 @@
                     {% endfor %}
                 </tr>
             </tbody>
-            
             <tfoot>
                 <tr>
                     <th>Balance before income</th>
@@ -97,16 +75,17 @@
                 </tr>
             </tfoot>
         </table>
-        
+
         <h2>Unscheduled transactions</h2>
-        
+
         <table id="unscheduled_transactions">
-            <tr>
-                <th>Description</th>
-                <th>Priority</th>
-                <th>Amount</th>
-            </tr>
-            
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Priority</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
             <tbody>
                 {% for unsheduled_transaction in unsheduled_transactions %}
                     <tr>
